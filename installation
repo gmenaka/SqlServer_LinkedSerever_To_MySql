@@ -1,0 +1,71 @@
+It took me about a day to figure this out, so I thought I'd try to save someone else the pain...
+
+http://www.thebuttonfactory.nl/?p=2204
+http://www.ideaexcursion.com/2009/02/25/howto-setup-sql-server-linked-server-to-mysql/
+
+
+Creating a Linked Server in SSMS for a MySQL database
+
+1. Download the MySQL ODBC driver from mysql.com
+2. Install MySQL ODBC driver on Server where SQL Server resides
+-Double Click Windows Installer file and follow directions.
+
+3. Create a DSN using the MySQL ODBC driver
+Start-> Settings -> Control Panel -> Administrative Tools -> Data Sources (ODBC)
+-Click on the System DSN tab
+-Click Add
+-Select the MySQL ODBC Driver
+-Click Finish
+On the Login Tab:
+-Type a descriptive name for your DSN.
+-Type the server name or IP Address into the Server text box.
+-Type the username needed to connect to the MySQL database into the user text box.
+-Type the password needed to connect to the MySQL database into the password text box.
+-Select the database you'd like to start in.
+On the Advance Tab:
+Under Flags 1:
+-Check Don't Optimize column width.
+-Check Return Matching Rows
+-Check Allow Big Results
+-Check Use Compressed protocol
+-Check BIGINT columns to INT
+-Check Safe
+Under Flags 2:
+-Check Don't Prompt Upon Connect
+-Check Ignore # in Table Name
+Under Flags 3:
+-Check Return Table Names for SQLDescribeCol
+-Check Disable Transactions
+Now Test your DSN by Clicking the Test button
+
+
+4. Create a Linked Server in SSMS for the MySQL database
+SSMS (SQL Server Management Studio -> Expand Server Objects
+-Right Click Linked Servers -> Select New Linked Server
+On the General Page:
+-Linked Server: Type the Name for your Linked Server
+-Server Type: Select Other Data Source
+-Provider: Select Microsoft OLE DB Provider for ODBC Drivers
+-Product name: Type MySQLDatabase
+-Data Source: Type the name of the DSN you created
+On The Security Page
+-Map a login to the Remote User and provide the Remote Users Password
+-Click Add under Local server login to remote server login mappings:
+-Select a Local Login From the drop down box
+-Type the name of the Remote User
+-Type the password for the Remote User
+
+5. Change the Properties of the Provider MSDASQL
+Expand Providers -> Right Click MSDASQL -> Select Properties
+-Enable Nested queries
+-Enable Level zero only (this one's the kicker)
+-Enable Allow inprocess
+-Enable Supports 'Like' operator
+
+6. Change settings in SQL Server Surface Area Configuration for Features
+-Enable OPENROWSET and OPENDATASOURCE support.
+7. Change settings in SQL Server Surface Area Configuration for Services and Connections
+-Enable Local and Remote connections via TCP/IP and named pipes
+
+8. Stop SQL Server and SQL Server Agent
+9. Start SQL Server and SQL Server Agent
